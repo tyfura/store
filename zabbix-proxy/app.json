@@ -1,0 +1,41 @@
+{
+    "id": "zabbix-proxy",
+    "name": "Zabbix Proxy",
+    "short": "Zabbix proxy for monitoring your local environment.",
+    "description": "Zabbix proxy using SQLite database and PSK encryption.",
+    "category": "monitoring",
+    "tags": [
+      "monitoring",
+      "zabbix",
+      "proxy"
+    ],
+    "version": "7.4",
+  
+    "variables": {
+      "hostname": {
+        "type": "string",
+        "title": "Hostname",
+        "description": "Unique hostname of the Zabbix proxy.",
+        "required": true
+      },
+      "server_host": {
+        "type": "string",
+        "title": "Zabbix server",
+        "description": "Hostname or IP address of the Zabbix server.",
+        "required": true
+      },
+      "tls_psk_identity": {
+        "type": "string",
+        "title": "PSK identity",
+        "description": "Pre-shared key identity used to connect to the Zabbix server.",
+        "required": true
+      },
+      "tls_psk": {
+        "type": "password",
+        "title": "PSK",
+        "description": "Pre-shared key used to encrypt the connection to the Zabbix server.",
+        "required": true,
+        "secret": true
+      }
+    }
+  }
