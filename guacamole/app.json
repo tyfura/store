@@ -1,0 +1,24 @@
+{
+    "id": "guacamole",
+    "name": "Apache Guacamole",
+    "short": "Clientless remote desktop gateway supporting RDP, SSH and VNC.",
+    "description": "Apache Guacamole is a clientless remote desktop gateway that supports standard protocols such as VNC, RDP and SSH.",
+    "category": "remote-access",
+    "tags": [
+      "remote-access",
+      "rdp",
+      "ssh",
+      "vnc",
+      "remote-desktop"
+    ],
+    "version": "latest",
+    "variables": {
+      "db_password": {
+        "type": "password",
+        "title": "Database password",
+        "description": "Password used by Guacamole to access the PostgreSQL database.",
+        "required": true,
+        "secret": true
+      }
+    }
+  }

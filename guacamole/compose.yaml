@@ -1,0 +1,71 @@
+services:
+
+  guac-init:
+    image: guacamole/guacamole:latest
+    container_name: guac-init-generator
+    user: root
+    entrypoint: >
+      sh -c "if [ ! -f /init/initdb.sql ]; then
+               /opt/guacamole/bin/initdb.sh --postgresql > /init/initdb.sql &&
+               echo 'SQL schema successfully generated.' ||
+               { echo 'Failed to generate SQL schema'; exit 1; };
+             else
+               echo 'SQL schema already exists. Skipping.';
+             fi"
+    volumes:
+      - init:/init
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: guac-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: guacamole_db
+      POSTGRES_USER: guacamole_user
+      POSTGRES_PASSWORD: "{{ .db_password }}"
+    volumes:
+      - init:/docker-entrypoint-initdb.d:ro
+      - db_data:/var/lib/postgresql/data
+    depends_on:
+      guac-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U guacamole_user -d guacamole_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  guacd:
+    image: guacamole/guacd:latest
+    container_name: guac-guacd
+    restart: always
+
+  guacamole:
+    image: guacamole/guacamole:latest
+    container_name: guac-web
+    restart: always
+    networks:
+      - default
+      - tbr_ingress
+    environment:
+      WEBAPP_CONTEXT: ROOT
+      GUACD_HOSTNAME: guacd
+      POSTGRESQL_HOSTNAME: postgres
+      POSTGRESQL_DATABASE: guacamole_db
+      POSTGRESQL_USERNAME: guacamole_user
+      POSTGRESQL_PASSWORD: "{{ .db_password }}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      guacd:
+        condition: service_started
+
+networks:
+  default:
+    driver: bridge
+  tbr_ingress:
+    external: true
+
+volumes:
+  init:
+  db_data:
