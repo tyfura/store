@@ -1,0 +1,16 @@
+services:
+  chromium:
+    image: kasmweb/chromium:1.19.0
+    shm_size: "512m"
+    networks:
+      default:
+      tbr_ingress:
+        aliases:
+          - browser
+    environment:
+      - VNC_PW=password
+      - VNCOPTIONS=-disableBasicAuth
+
+networks:
+  tbr_ingress:
+    external: true

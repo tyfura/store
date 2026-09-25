@@ -1,0 +1,17 @@
+{
+    "id": "chromium",
+    "name": "Chromium",
+    "short": "Web browser running in an isolated container.",
+    "description": "Chromium web browser delivered through a browser-accessible KasmVNC session.",
+    "category": "remote-access",
+    "tags": [
+      "browser",
+      "chromium",
+      "web",
+      "remote-access",
+      "kasm"
+    ],
+    "version": "1.19.0",
+    "license": "https://kasmweb.com/eula",
+    "variables": {}
+  }

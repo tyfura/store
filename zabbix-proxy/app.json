@@ -10,7 +10,7 @@
       "proxy"
     ],
     "version": "7.4",
-  
+    "license": "https://www.gnu.org/licenses/agpl-3.0.html",
     "variables": {
       "hostname": {
         "type": "string",
