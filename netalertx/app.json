@@ -1,0 +1,17 @@
+{
+    "id": "netalertx",
+    "name": "NetAlertX",
+    "short": "Network monitoring and device discovery tool.",
+    "description": "NetAlertX monitors your network, discovers devices and alerts you when new or unexpected devices appear.",
+    "category": "monitoring",
+    "tags": [
+      "monitoring",
+      "network",
+      "network-discovery",
+      "devices",
+      "alerts"
+    ],
+    "version": "latest",
+    "license": "https://github.com/jokob-sk/NetAlertX/blob/main/LICENSE",
+    "variables": {}
+  }
