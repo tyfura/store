@@ -12,7 +12,7 @@
       "remote-desktop"
     ],
     "version": "latest",
-    "license": "https://www.apache.org/licenses/LICENSE-2.0",
+    "license": "https://github.com/apache/guacamole-server/blob/main/LICENSE",
     "variables": {
       "db_password": {
         "type": "password",

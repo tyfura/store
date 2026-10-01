@@ -12,6 +12,6 @@
       "kasm"
     ],
     "version": "1.19.0",
-    "license": "https://kasmweb.com/eula",
+    "license": "https://github.com/chromium/chromium/blob/main/LICENSE",
     "variables": {}
   }

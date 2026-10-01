@@ -1,0 +1,49 @@
+services:
+  glpi-web:
+    image: glpi/glpi:latest
+    container_name: glpi-application
+    restart: unless-stopped
+    volumes:
+      - glpi_data:/var/glpi
+    environment:
+      - TZ=Europe/Prague
+      - GLPI_DB_HOST=glpi-db
+      - GLPI_DB_NAME=glpi
+      - GLPI_DB_PORT=3306
+      - GLPI_DB_USER=glpi_user
+      - GLPI_DB_PASSWORD={{ .db_password }}
+    depends_on:
+      glpi-db:
+        condition: service_healthy
+    networks:
+      - glpi-internal
+      - tbr_ingress
+
+  glpi-db:
+    image: mariadb:10.11
+    container_name: glpi-database
+    restart: unless-stopped
+    volumes:
+      - glpi_db_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: {{ .db_root_password }}
+      MYSQL_DATABASE: glpi
+      MYSQL_USER: glpi_user
+      MYSQL_PASSWORD: {{ .db_password }}
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - glpi-internal
+
+volumes:
+  glpi_data:
+  glpi_db_data:
+
+networks:
+  glpi-internal:
+    driver: bridge
+  tbr_ingress:
+    external: true

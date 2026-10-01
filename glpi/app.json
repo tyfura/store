@@ -1,0 +1,32 @@
+{
+    "id": "glpi",
+    "name": "GLPI",
+    "short": "IT asset management and service desk platform.",
+    "description": "GLPI is an open source IT asset management and service management platform.",
+    "category": "management",
+    "tags": [
+      "it-management",
+      "asset-management",
+      "service-desk",
+      "helpdesk",
+      "inventory"
+    ],
+    "version": "latest",
+    "license": "https://github.com/glpi-project/glpi/blob/master/LICENSE",
+    "variables": {
+      "db_root_password": {
+        "type": "password",
+        "title": "Database root password",
+        "description": "Root password for the MariaDB database.",
+        "required": true,
+        "secret": true
+      },
+      "db_password": {
+        "type": "password",
+        "title": "Database user password",
+        "description": "Password for the GLPI database user.",
+        "required": true,
+        "secret": true
+      }
+    }
+  }
