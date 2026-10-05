@@ -4,6 +4,7 @@
     "short": "Web browser running in an isolated container.",
     "description": "Chromium web browser delivered through a browser-accessible KasmVNC session.",
     "category": "remote-access",
+    "target": "chromium:6901",
     "tags": [
       "browser",
       "chromium",
