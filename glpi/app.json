@@ -4,6 +4,8 @@
     "short": "IT asset management and service desk platform.",
     "description": "GLPI is an open source IT asset management and service management platform.",
     "category": "management",
+    "target": "glpi-web:80",
+    "override-host": true,
     "tags": [
       "it-management",
       "asset-management",

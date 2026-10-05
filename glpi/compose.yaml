@@ -1,7 +1,6 @@
 services:
   glpi-web:
     image: glpi/glpi:latest
-    container_name: glpi-application
     restart: unless-stopped
     volumes:
       - glpi_data:/var/glpi
@@ -18,7 +17,8 @@ services:
     networks:
       - glpi-internal
       - tbr_ingress
-
+        aliases:
+          - ${APP_NAME}-glpi-web
   glpi-db:
     image: mariadb:10.11
     container_name: glpi-database
