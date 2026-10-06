@@ -21,7 +21,6 @@ services:
           - {{ .AppName }}-web
   glpi-db:
     image: mariadb:10.11
-    container_name: glpi-database
     restart: unless-stopped
     volumes:
       - glpi_db_data:/var/lib/mysql
