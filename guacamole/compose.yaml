@@ -42,11 +42,12 @@ services:
 
   guacamole:
     image: guacamole/guacamole:latest
-    container_name: guac-web
     restart: always
     networks:
       - default
       - tbr_ingress
+        aliases:
+          - {{ .AppName }}-web
     environment:
       WEBAPP_CONTEXT: ROOT
       GUACD_HOSTNAME: guacd

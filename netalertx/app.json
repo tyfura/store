@@ -4,6 +4,7 @@
     "short": "Network monitoring and device discovery tool.",
     "description": "NetAlertX monitors your network, discovers devices and alerts you when new or unexpected devices appear.",
     "category": "monitoring",
+    "target": "http://172.17.0.1:20211",
     "tags": [
       "monitoring",
       "network",

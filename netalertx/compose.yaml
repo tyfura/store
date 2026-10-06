@@ -1,7 +1,6 @@
 services:
   netalertx:
     image: ghcr.io/netalertx/netalertx:latest
-    container_name: netalertx
     network_mode: host
     restart: unless-stopped
 
