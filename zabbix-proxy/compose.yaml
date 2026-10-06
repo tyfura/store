@@ -1,7 +1,6 @@
 services:
   proxy:
     image: zabbix/zabbix-proxy-sqlite3:alpine-7.4-latest
-    container_name: zabbix-proxy
     restart: unless-stopped
     init: true
     environment:

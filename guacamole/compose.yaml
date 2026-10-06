@@ -44,8 +44,8 @@ services:
     image: guacamole/guacamole:latest
     restart: always
     networks:
-      - default
-      - tbr_ingress
+      default:
+      tbr_ingress:
         aliases:
           - {{ .AppName }}-web
     environment:

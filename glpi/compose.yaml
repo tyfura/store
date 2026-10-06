@@ -15,8 +15,8 @@ services:
       glpi-db:
         condition: service_healthy
     networks:
-      - glpi-internal
-      - tbr_ingress
+      glpi-internal:
+      tbr_ingress:
         aliases:
           - {{ .AppName }}-web
   glpi-db:
