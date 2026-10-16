@@ -1,0 +1,58 @@
+# Master key: on the first start the one-shot akbase-keygen service writes a
+# fresh akbk_ key to the akbase-config volume. It never overwrites an existing
+# key. Back the key up separately from the data (akbase-data); without it the
+# data cannot be decrypted.
+services:
+  akbase-keygen:
+    image: alpine:3.22
+    restart: "no"
+    read_only: true
+    cap_drop: [ALL]
+    cap_add: [CHOWN]                                 # hand the key to the akbase user (65532)
+    security_opt: ["no-new-privileges:true"]
+    network_mode: none
+    volumes:
+      - akbase-config:/config
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - |
+        umask 077
+        if [ -s /config/akbase_key ]; then echo "akbase_key exists, keeping it"; exit 0; fi
+        rm -f /config/akbase_key.tmp
+        printf 'akbk_%s\n' "$$(head -c 32 /dev/urandom | base64 | tr '+/' '-_' | tr -d '=\n')" > /config/akbase_key.tmp
+        chmod 0400 /config/akbase_key.tmp
+        chown 65532:65532 /config/akbase_key.tmp
+        mv /config/akbase_key.tmp /config/akbase_key
+        echo "akbase_key created, back it up now"
+  akbase:
+    image: registry.tyfura.net/io/akbase:0.3.0
+    restart: unless-stopped
+    depends_on:
+      akbase-keygen:
+        condition: service_completed_successfully
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      AKBASE_USER_HEADER: Remote-User
+      AKBASE_TRUSTED_PROXIES: "{{ .trusted_proxies }}"
+      AKBASE_TLS_HOSTS: "{{ .AppName }}-web,{{ .ui_host }},{{ .mcp_host }}"
+      AKBASE_MCP_URL: "https://{{ .mcp_host }}/mcp"
+      AKBASE_UI_URL: "https://{{ .ui_host }}"
+      AKBASE_KEY_FILE: /config/akbase_key
+    volumes:
+      - akbase-data:/data
+      - akbase-config:/config:ro
+    expose: ["8443", "8444"]
+    networks:
+      tbr_ingress:
+        aliases:
+          - {{ .AppName }}-web
+
+networks:
+  tbr_ingress:
+    external: true
+
+volumes:
+  akbase-data:
+  akbase-config:

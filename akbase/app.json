@@ -1,0 +1,43 @@
+{
+    "id": "akbase",
+    "name": "akbase",
+    "short": "Encrypted knowledge base for people and AI assistants (MCP).",
+    "description": "akbase is a small encrypted knowledge base with a web UI for people and an MCP server for Claude and other AI clients. It needs two proxy links: the web UI (scheme app, with authentication) on the UI domain, and a second link on the MCP domain without authentication pointing to https://<instance>-web:8444. Both domains must match the values entered here. After the first start, find the initialization code in the app log (INITIALIZATION CODE) and enter it in the web UI to become admin. The master key is generated into the akbase-config volume on first start; back it up separately from the data, without it the data cannot be decrypted.",
+    "category": "management",
+    "target": "https://{{ .AppName }}-web:8443",
+    "tags": [
+      "knowledge-base",
+      "mcp",
+      "ai",
+      "claude",
+      "documentation"
+    ],
+    "version": "0.3.0",
+    "variables": {
+      "ui_host": {
+        "type": "string",
+        "title": "Web UI domain",
+        "description": "Public domain of the web UI link, e.g. kb.example.com. Used for the OAuth consent URL and the TLS certificate.",
+        "required": true,
+        "secret": false,
+        "placeholder": "kb.example.com"
+      },
+      "mcp_host": {
+        "type": "string",
+        "title": "MCP domain",
+        "description": "Public domain of the MCP link (without authentication), e.g. kb-mcp.example.com. The MCP URL will be https://<domain>/mcp. Together with the web UI domain it enables OAuth for claude.ai.",
+        "required": true,
+        "secret": false,
+        "placeholder": "kb-mcp.example.com"
+      },
+      "trusted_proxies": {
+        "type": "string",
+        "title": "Trusted proxy networks",
+        "description": "Comma-separated CIDR list of addresses allowed to pass the authenticated user header to the web UI (the reverse proxy network).",
+        "default": "172.16.0.0/12",
+        "required": false,
+        "secret": false,
+        "placeholder": "172.16.0.0/12"
+      }
+    }
+  }
