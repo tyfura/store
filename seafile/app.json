@@ -1,8 +1,8 @@
 {
     "id": "seafile",
     "name": "Seafile",
-    "short": "Private cloud storage and file synchronization platform.",
-    "description": "Seafile Community Edition is a self-hosted file synchronization and sharing platform. It supports libraries, file sharing, groups, version history and client-side encrypted libraries.",
+    "short": "Self-hosted file synchronization and sharing platform.",
+    "description": "Seafile Community Edition is a self-hosted file synchronization and sharing platform. It supports libraries, file sharing, groups, file versioning and collaboration.",
     "category": "file-management",
     "tags": [
       "cloud",
@@ -13,6 +13,7 @@
     ],
     "version": "14.0",
     "license": "https://github.com/haiwen/seafile-server/blob/master/LICENSE.txt",
+    "target": "http://{{ .AppName }}-seafile:80",
     "variables": {
       "hostname": {
         "type": "string",
@@ -52,10 +53,9 @@
       "jwt_private_key": {
         "type": "string",
         "title": "JWT private key",
-        "description": "Random secret string with at least 32 characters, used for internal authentication.",
+        "description": "Random secret string with at least 32 characters.",
         "required": true,
-        "secret": true,
-        "placeholder": "Generate a random string of at least 32 characters"
+        "secret": true
       },
       "timezone": {
         "type": "string",
