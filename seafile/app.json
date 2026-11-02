@@ -62,6 +62,7 @@
         "title": "Time zone",
         "description": "Container time zone.",
         "default": "Etc/UTC",
+        "required": true,
         "placeholder": "Europe/Prague"
       }
     }
