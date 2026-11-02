@@ -5,6 +5,12 @@ services:
       MYSQL_ROOT_PASSWORD: "{{ .mysql_root_password }}"
       MYSQL_LOG_CONSOLE: "true"
       MARIADB_AUTO_UPGRADE: "1"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 30s
+      interval: 10s
+      timeout: 5s
+      retries: 10
     volumes:
       - seafile_db:/var/lib/mysql
     networks:
@@ -24,8 +30,10 @@ services:
   seafile:
     image: seafileltd/seafile-mc:14.0-latest
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
     environment:
       SEAFILE_SERVER_HOSTNAME: "{{ .hostname }}"
       SEAFILE_SERVER_PROTOCOL: http
