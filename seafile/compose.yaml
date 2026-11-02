@@ -1,0 +1,65 @@
+services:
+  db:
+    image: mariadb:10.11
+    environment:
+      MYSQL_ROOT_PASSWORD: "{{ .mysql_root_password }}"
+      MYSQL_LOG_CONSOLE: "true"
+    volumes:
+      - seafile_db:/var/lib/mysql
+    networks:
+      - share_net
+    logging:
+      driver: json-file
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    networks:
+      - share_net
+    logging:
+      driver: json-file
+    restart: always
+
+  seafile:
+    image: seafileltd/seafile-mc:14.0-latest
+    depends_on:
+      - db
+      - redis
+    environment:
+      SEAFILE_SERVER_HOSTNAME: "{{ .hostname }}"
+      SEAFILE_SERVER_PROTOCOL: http
+
+      INIT_SEAFILE_MYSQL_ROOT_PASSWORD: "{{ .mysql_root_password }}"
+      SEAFILE_MYSQL_DB_HOST: db
+      SEAFILE_MYSQL_DB_PORT: "3306"
+      SEAFILE_MYSQL_DB_USER: seafile
+      SEAFILE_MYSQL_DB_PASSWORD: "{{ .mysql_password }}"
+
+      INIT_SEAFILE_ADMIN_EMAIL: "{{ .admin_email }}"
+      INIT_SEAFILE_ADMIN_PASSWORD: "{{ .admin_password }}"
+
+      JWT_PRIVATE_KEY: "{{ .jwt_private_key }}"
+      TIME_ZONE: "{{ .timezone }}"
+
+      CACHE_PROVIDER: redis
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+
+    volumes:
+      - seafile_data:/shared
+    networks:
+      - share_net
+      - tbr_ingress
+    logging:
+      driver: json-file
+    restart: always
+
+volumes:
+  seafile_db:
+  seafile_data:
+
+networks:
+  share_net:
+    driver: bridge
+  tbr_ingress:
+    external: true

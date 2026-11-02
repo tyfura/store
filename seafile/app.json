@@ -1,0 +1,69 @@
+{
+    "id": "seafile",
+    "name": "Seafile",
+    "short": "Private cloud storage and file synchronization platform.",
+    "description": "Seafile Community Edition is a self-hosted file synchronization and sharing platform. It supports libraries, file sharing, groups, version history and client-side encrypted libraries.",
+    "category": "file-management",
+    "tags": [
+      "cloud",
+      "storage",
+      "file-sharing",
+      "synchronization",
+      "collaboration"
+    ],
+    "version": "14.0",
+    "license": "https://github.com/haiwen/seafile-server/blob/master/LICENSE.txt",
+    "variables": {
+      "hostname": {
+        "type": "string",
+        "title": "Server hostname",
+        "description": "Public domain name used to access Seafile, without protocol.",
+        "required": true,
+        "placeholder": "files.example.com"
+      },
+      "admin_email": {
+        "type": "string",
+        "title": "Administrator email",
+        "description": "Email address of the initial Seafile administrator.",
+        "required": true,
+        "placeholder": "admin@example.com"
+      },
+      "admin_password": {
+        "type": "string",
+        "title": "Administrator password",
+        "description": "Password for the initial Seafile administrator.",
+        "required": true,
+        "secret": true
+      },
+      "mysql_root_password": {
+        "type": "string",
+        "title": "MariaDB root password",
+        "description": "Root password for the MariaDB database server.",
+        "required": true,
+        "secret": true
+      },
+      "mysql_password": {
+        "type": "string",
+        "title": "Seafile database password",
+        "description": "Password for the Seafile database user.",
+        "required": true,
+        "secret": true
+      },
+      "jwt_private_key": {
+        "type": "string",
+        "title": "JWT private key",
+        "description": "Random secret string with at least 32 characters, used for internal authentication.",
+        "required": true,
+        "secret": true,
+        "placeholder": "Generate a random string of at least 32 characters"
+      },
+      "timezone": {
+        "type": "string",
+        "title": "Time zone",
+        "description": "Container time zone.",
+        "default": "Etc/UTC",
+        "required": true,
+        "placeholder": "Europe/Prague"
+      }
+    }
+  }
