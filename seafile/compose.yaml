@@ -36,7 +36,10 @@ services:
         condition: service_started
     environment:
       SEAFILE_SERVER_HOSTNAME: "{{ .hostname }}"
-      SEAFILE_SERVER_PROTOCOL: http
+      SEAFILE_SERVER_PROTOCOL: https
+      # TLS is terminated by the bridge proxy and the internal nginx does not
+      # forward X-Forwarded-Proto, so Django must trust the public origin explicitly.
+      CSRF_TRUSTED_ORIGINS: '["https://{{ .hostname }}"]'
 
       SEAFILE_MYSQL_DB_HOST: db
       SEAFILE_MYSQL_DB_PORT: "3306"
