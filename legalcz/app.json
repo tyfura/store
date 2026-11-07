@@ -2,7 +2,7 @@
   "id": "legalcz",
   "name": "Zákony ČR (legal-cz)",
   "short": "Aktuální znění předpisů ČR z e-Sbírky pro Claude (MCP) a firemní právní asistent (chat).",
-  "description": "legal-cz stahuje z e-Sbírky platné předpisy (zákony, nařízení vlády, vyhlášky, mezinárodní smlouvy), indexuje je pro hledání podle významu a nabízí je Claude a dalším AI klientům jako MCP server; obsahuje i judikaturu ze Sbírky soudních rozhodnutí a důvodové zprávy k OZ a ZOK. Potřebuje dva linky: webové UI (scheme app, s přihlášením) na doméně UI a druhý link bez přihlášení na doméně MCP, mířící na https://<instance>-web:8444. Obě domény musí odpovídat hodnotám zadaným zde. Na doméně UI je také právní asistent (chat s Claude, cena každé odpovědi je vidět; vyžaduje klíč Claude API). Kdo se do UI přihlásí jako administrátor TBR, je automaticky admin aplikace; ostatní uživatelé čekají na schválení na stránce Uživatelé. Po instalaci v UI spusťte synchronizaci (Synchronizace → Spustit); první import trvá několik hodin, judikatura dalších asi 10 hodin. MCP adresa pro Claude je https://<doména MCP>/mcp, připojení klienta schvaluje admin. Zálohovat: svazky app-data a qdrant-data (zálohy za běhu ukládá aplikace do svazku backup, export: docker compose run --rm tools export). Otisk certifikátu pro pole pin je v logu aplikace po prvním startu.",
+  "description": "legal-cz stahuje z e-Sbírky platné předpisy (zákony, nařízení vlády, vyhlášky, mezinárodní smlouvy), indexuje je pro hledání podle významu a nabízí je Claude a dalším AI klientům jako MCP server; obsahuje i judikaturu ze Sbírky soudních rozhodnutí a důvodové zprávy k OZ a ZOK. Potřebuje dva linky: webové UI (scheme app, s přihlášením) na doméně UI a druhý link bez přihlášení na doméně MCP, mířící na https://<instance>-web:8444. Obě domény musí odpovídat hodnotám zadaným zde. Na doméně UI je také právní asistent (chat s Claude, cena každé odpovědi je vidět; vyžaduje klíč Claude API). Správci aplikace jsou e-maily zadané v poli Správci (a administrátoři TBR); ostatní uživatelé čekají na schválení na stránce Uživatelé. Po instalaci v UI spusťte synchronizaci (Synchronizace → Spustit); první import trvá několik hodin, judikatura dalších asi 10 hodin. MCP adresa pro Claude je https://<doména MCP>/mcp, připojení klienta schvaluje admin. Zálohovat: svazky app-data a qdrant-data (zálohy za běhu ukládá aplikace do svazku backup, export: docker compose run --rm tools export). Otisk certifikátu pro pole pin je v logu aplikace po prvním startu.",
   "category": "management",
   "tags": [
     "legal",
@@ -12,7 +12,7 @@
     "claude",
     "e-sbirka"
   ],
-  "version": "0.28",
+  "version": "0.29",
   "target": "https://{{ .AppName }}-web:8443",
   "assert": true,
   "auth": "required",
@@ -32,6 +32,14 @@
       "required": true,
       "secret": false,
       "placeholder": "pravo-mcp.example.cz"
+    },
+    "admins": {
+      "type": "string",
+      "title": "Správci",
+      "description": "E-maily uživatelů TBR, kteří jsou vždy správci aplikace (oddělené čárkou), např. petr@example.cz. Ostatní schvalují na stránce Uživatelé.",
+      "required": true,
+      "secret": false,
+      "placeholder": "jmeno@example.cz"
     },
     "anthropic_api_key": {
       "type": "password",
