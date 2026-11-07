@@ -1,0 +1,44 @@
+{
+  "id": "legalcz",
+  "name": "Zákony ČR (legal-cz)",
+  "short": "Aktuální znění předpisů ČR z e-Sbírky pro Claude (MCP) a firemní právní asistent (chat).",
+  "description": "legal-cz stahuje z e-Sbírky platné předpisy (zákony, nařízení vlády, vyhlášky, mezinárodní smlouvy), indexuje je pro hledání podle významu a nabízí je Claude a dalším AI klientům jako MCP server; obsahuje i judikaturu ze Sbírky soudních rozhodnutí a důvodové zprávy k OZ a ZOK. Potřebuje dva linky: webové UI (scheme app, s přihlášením) na doméně UI a druhý link bez přihlášení na doméně MCP, mířící na https://<instance>-web:8444. Obě domény musí odpovídat hodnotám zadaným zde. Na doméně UI je také právní asistent (chat s Claude, cena každé odpovědi je vidět; vyžaduje klíč Claude API). Kdo se do UI přihlásí jako administrátor TBR, je automaticky admin aplikace; ostatní uživatelé čekají na schválení na stránce Uživatelé. Po instalaci v UI spusťte synchronizaci (Synchronizace → Spustit); první import trvá několik hodin, judikatura dalších asi 10 hodin. MCP adresa pro Claude je https://<doména MCP>/mcp, připojení klienta schvaluje admin. Zálohovat: svazky app-data a qdrant-data (zálohy za běhu ukládá aplikace do svazku backup, export: docker compose run --rm tools export). Otisk certifikátu pro pole pin je v logu aplikace po prvním startu.",
+  "category": "management",
+  "tags": [
+    "legal",
+    "law",
+    "mcp",
+    "ai",
+    "claude",
+    "e-sbirka"
+  ],
+  "version": "0.28",
+  "target": "https://{{ .AppName }}-web:8443",
+  "assert": true,
+  "auth": "required",
+  "variables": {
+    "ui_host": {
+      "type": "string",
+      "title": "Doména UI",
+      "description": "Veřejná doména linku webového UI (s přihlášením TBR), např. pravo.example.cz. Na ní běží admin a schvalování MCP klientů.",
+      "required": true,
+      "secret": false,
+      "placeholder": "pravo.example.cz"
+    },
+    "mcp_host": {
+      "type": "string",
+      "title": "Doména MCP",
+      "description": "Veřejná doména druhého linku bez přihlášení, mířícího na https://<instance>-web:8444, např. pravo-mcp.example.cz. MCP adresa pro Claude bude https://<doména>/mcp; přístup chrání OAuth.",
+      "required": true,
+      "secret": false,
+      "placeholder": "pravo-mcp.example.cz"
+    },
+    "anthropic_api_key": {
+      "type": "password",
+      "title": "Klíč Claude API (asistent)",
+      "description": "API klíč z Claude Console (platform.claude.com) pro právního asistenta (chat). Bez klíče aplikace běží, jen bez asistenta. V Claude Console doporučujeme nastavit limit útraty.",
+      "required": false,
+      "secret": true
+    }
+  }
+}

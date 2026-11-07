@@ -1,0 +1,116 @@
+# legal-cz: aktuální znění předpisů ČR z e-Sbírky pro Claude (MCP server) a admin.
+# Dva linky TBR: UI (scheme app, s přihlášením a tvrzením X-Tbr-Assertion) na
+# https://{{ .AppName }}-web:8443 a MCP bez přihlášení na https://{{ .AppName }}-web:8444.
+# Qdrant a embedder jsou jen ve vnitřní síti instance.
+services:
+  app:
+    image: registry.tyfura.net/io/legal-cz:0.28
+    restart: unless-stopped
+    user: "65532:65532"
+    read_only: true
+    tmpfs: ["/tmp"]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      PUBLIC_ADMIN_URL: "https://{{ .ui_host }}"
+      PUBLIC_MCP_URL: "https://{{ .mcp_host }}/mcp"
+      ADMIN_ADDR: ":8443"
+      MCP_ADDR: ":8444"
+      TLS_DIR: /data/tls
+      TLS_HOSTS: "{{ .AppName }}-web,{{ .ui_host }},{{ .mcp_host }}"
+      TBR_JWKS_FILE: /etc/tbr/tbr-assert.jwks
+      TBR_APP_NAME: "{{ .AppName }}"
+      TBR_HOST: "{{ .ui_host }}"
+      QDRANT_URL: http://qdrant:6333
+      EMBEDDER_URL: http://embedder:80
+      EMBED_MODEL: intfloat/multilingual-e5-base
+      DATA_DIR: /data
+      BACKUP_DIR: /backup
+      ANTHROPIC_API_KEY: "{{ .anthropic_api_key }}"
+    volumes:
+      - app-data:/data
+      - backup:/backup
+      - /opt/tyft/app/{{ .AppName }}:/etc/tbr:ro
+    expose: ["8443", "8444"]
+    depends_on:
+      qdrant:
+        condition: service_healthy
+      embedder:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "/app", "healthcheck"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      backend:
+      tbr_ingress:
+        aliases:
+          - {{ .AppName }}-web
+
+  qdrant:
+    image: qdrant/qdrant:v1.19.2
+    restart: unless-stopped
+    environment:
+      QDRANT__TELEMETRY_DISABLED: "true"
+    volumes:
+      - qdrant-data:/qdrant/storage
+    # Obraz nemá curl; stačí ověřit, že port přijímá spojení.
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/6333"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+    networks: [backend]
+
+  embedder:
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.9.4
+    restart: unless-stopped
+    command:
+      - --model-id=intfloat/multilingual-e5-base
+      - --port=80
+      - --max-client-batch-size=64
+      - --auto-truncate
+      - --json-output
+    volumes:
+      - embedder-cache:/data
+    # TEI odpovídá až po stažení a načtení modelu; první start může trvat několik minut.
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:80/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 600s
+    networks: [backend]
+
+  # Pasivní pomocník pro export, import a reset (s „docker compose up“ se nespouští):
+  #   cd /opt/tyft/app/{{ .AppName }} && docker compose run --rm tools
+  tools:
+    image: registry.tyfura.net/io/legal-cz:0.28
+    profiles: [tools]
+    entrypoint: ["/app", "tools"]
+    # Root kvůli čtení a zápisu dat Qdrantu; vlastníky souborů nastaví zpět.
+    user: "0:0"
+    environment:
+      DATA_DIR: /data
+      QDRANT_DATA_DIR: /qdrant
+      BACKUP_DIR: /backup
+      QDRANT_URL: http://qdrant:6333
+    volumes:
+      - app-data:/data
+      - qdrant-data:/qdrant
+      - backup:/backup
+    networks: [backend]
+
+networks:
+  backend:
+  tbr_ingress:
+    external: true
+
+volumes:
+  app-data:
+  qdrant-data:
+  embedder-cache:
+  backup:
