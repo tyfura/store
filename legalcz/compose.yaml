@@ -4,7 +4,7 @@
 # Qdrant a embedder jsou jen ve vnitřní síti instance.
 services:
   app:
-    image: registry.tyfura.net/app/legal-cz:0.30
+    image: registry.tyfura.net/app/legal-cz:0.31
     restart: unless-stopped
     user: "65532:65532"
     read_only: true
@@ -89,7 +89,7 @@ services:
   # Pasivní pomocník pro export, import a reset (s „docker compose up“ se nespouští):
   #   cd /opt/tyft/app/{{ .AppName }} && docker compose run --rm tools
   tools:
-    image: registry.tyfura.net/app/legal-cz:0.30
+    image: registry.tyfura.net/app/legal-cz:0.31
     profiles: [tools]
     entrypoint: ["/app", "tools"]
     # Root kvůli čtení a zápisu dat Qdrantu; vlastníky souborů nastaví zpět.
