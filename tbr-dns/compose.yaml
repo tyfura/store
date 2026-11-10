@@ -1,0 +1,19 @@
+# tbr-dns: DNS of the host network, the configuration (dns.json) is written
+# by TBR to the app dir, the app answers on the addresses of the host.
+services:
+  dns:
+    image: registry.tyfura.net/app/tbr-dns:0.1
+    network_mode: host
+    restart: unless-stopped
+    # root without capabilities except binding port 53: docker gives cap_add
+    # to non-root users only through file capabilities, which
+    # no-new-privileges disables
+    user: "0:0"
+    read_only: true
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      TBR_DNS_CONFIG: /etc/tbr/dns.json
+    volumes:
+      - /opt/tyft/app/{{ .AppName }}:/etc/tbr:ro

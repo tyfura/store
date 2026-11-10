@@ -1,0 +1,15 @@
+{
+  "id": "tbr-dns",
+  "name": "TBR DNS",
+  "short": "Local DNS: links go directly to TBR, device names and own records.",
+  "description": "DNS server for the network of the TBR host. LAN clients resolve the links of TBR to the host (the traffic doesn't go through the internet), the devices of the inventory get names in the internal zone (e.g. nas.home.arpa) and own records and forwarders can be added. Everything is managed in TBR (System → DNS), the app has no own UI. After the installation set the IP address of the TBR host as the only DNS server in your DHCP server. Only one instance can be installed.",
+  "category": "network",
+  "tags": [
+    "dns",
+    "network",
+    "resolver"
+  ],
+  "version": "0.1",
+  "provides": ["dns"],
+  "variables": {}
+}
