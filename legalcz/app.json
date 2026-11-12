@@ -2,7 +2,7 @@
   "id": "legalcz",
   "name": "Zákony ČR (legal-cz)",
   "short": "Aktuální znění předpisů ČR z e-Sbírky pro Claude (MCP) a firemní právní asistent (chat).",
-  "description": "legal-cz stahuje z e-Sbírky platné předpisy (zákony, nařízení vlády, vyhlášky, mezinárodní smlouvy), indexuje je pro hledání podle významu a nabízí je Claude a dalším AI klientům jako MCP server; obsahuje i judikaturu ze Sbírky soudních rozhodnutí a důvodové zprávy k OZ a ZOK. Potřebuje dva linky: webové UI (scheme app, s přihlášením) na doméně UI a druhý link bez přihlášení na doméně MCP, mířící na https://<instance>-web:8444. Obě domény musí odpovídat hodnotám zadaným zde. Na doméně UI je také právní asistent (chat s Claude, cena každé odpovědi je vidět; vyžaduje klíč Claude API). Správci aplikace jsou e-maily zadané v poli Správci; ostatní uživatelé čekají na schválení na stránce Uživatelé. Po instalaci v UI spusťte synchronizaci (Synchronizace → Spustit); první import trvá několik hodin, judikatura dalších asi 10 hodin. MCP adresa pro Claude je https://<doména MCP>/mcp, připojení klienta schvaluje admin. Zálohovat: svazky app-data a qdrant-data (zálohy za běhu ukládá aplikace do svazku backup, export: docker compose run --rm tools export). Otisk certifikátu pro pole pin je v logu aplikace po prvním startu.",
+  "description": "legal-cz stahuje z e-Sbírky platné předpisy (zákony, nařízení vlády, vyhlášky, mezinárodní smlouvy), indexuje je pro hledání podle významu a nabízí je Claude a dalším AI klientům jako MCP server; obsahuje i judikaturu ze Sbírky soudních rozhodnutí a důvodové zprávy k OZ a ZOK. Potřebuje link webového UI (scheme app, s přihlášením) na doméně UI. Veřejný MCP server pro Claude zvenku (projekt na claude.ai, Claude Code) je volitelný: zapne se vyplněním pole Doména MCP a potřebuje druhý link bez přihlášení na této doméně, mířící na https://<instance>-web:8444. Asistent v UI ho nepotřebuje. Domény musí odpovídat hodnotám zadaným zde. Na doméně UI je také právní asistent (chat s Claude, cena každé odpovědi je vidět; vyžaduje klíč Claude API), sdílení chatů a šablony smluv k vyplnění a tisku. Správci aplikace jsou e-maily zadané v poli Správci; ostatní uživatelé čekají na schválení na stránce Uživatelé. Po instalaci v UI spusťte synchronizaci (Synchronizace → Spustit); první import trvá několik hodin, judikatura dalších asi 10 hodin. Se zapnutým MCP je adresa pro Claude https://<doména MCP>/mcp, připojení klienta schvaluje admin. Zálohovat: svazky app-data a qdrant-data (zálohy za běhu ukládá aplikace do svazku backup, export: docker compose run --rm tools export). Otisk certifikátu pro pole pin je v logu aplikace po prvním startu.",
   "category": "management",
   "tags": [
     "legal",
@@ -12,7 +12,7 @@
     "claude",
     "e-sbirka"
   ],
-  "version": "0.33",
+  "version": "0.35",
   "target": "https://{{ .AppName }}-web:8443",
   "assert": true,
   "auth": "required",
@@ -20,16 +20,16 @@
     "ui_host": {
       "type": "string",
       "title": "Doména UI",
-      "description": "Veřejná doména linku webového UI (s přihlášením TBR), např. pravo.example.cz. Na ní běží admin a schvalování MCP klientů.",
+      "description": "Veřejná doména linku webového UI (s přihlášením TBR), např. pravo.example.cz. Na ní běží asistent, šablony smluv i správa.",
       "required": true,
       "secret": false,
       "placeholder": "pravo.example.cz"
     },
     "mcp_host": {
       "type": "string",
-      "title": "Doména MCP",
-      "description": "Veřejná doména druhého linku bez přihlášení, mířícího na https://<instance>-web:8444, např. pravo-mcp.example.cz. MCP adresa pro Claude bude https://<doména>/mcp; přístup chrání OAuth.",
-      "required": true,
+      "title": "Doména MCP (volitelná)",
+      "description": "Jen pro Claude zvenku (projekt na claude.ai, Claude Code). Prázdné = veřejný MCP server vypnutý. Vyplněné: veřejná doména druhého linku bez přihlášení, mířícího na https://<instance>-web:8444, např. pravo-mcp.example.cz; MCP adresa bude https://<doména>/mcp, přístup chrání OAuth.",
+      "required": false,
       "secret": false,
       "placeholder": "pravo-mcp.example.cz"
     },

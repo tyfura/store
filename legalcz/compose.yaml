@@ -1,10 +1,10 @@
-# legal-cz: aktuální znění předpisů ČR z e-Sbírky pro Claude (MCP server) a admin.
-# Dva linky TBR: UI (scheme app, s přihlášením a tvrzením X-Tbr-Assertion) na
-# https://{{ .AppName }}-web:8443 a MCP bez přihlášení na https://{{ .AppName }}-web:8444.
+# legal-cz: aktuální znění předpisů ČR z e-Sbírky, právní asistent a šablony smluv.
+# Link TBR UI (scheme app, s přihlášením a tvrzením X-Tbr-Assertion) na https://{{ .AppName }}-web:8443.
+# Volitelně (vyplněná doména MCP) MCP bez přihlášení na https://{{ .AppName }}-web:8444.
 # Qdrant a embedder jsou jen ve vnitřní síti instance.
 services:
   app:
-    image: registry.tyfura.net/app/legal-cz:0.33
+    image: registry.tyfura.net/app/legal-cz:0.35
     restart: unless-stopped
     user: "65532:65532"
     read_only: true
@@ -13,11 +13,11 @@ services:
     security_opt: ["no-new-privileges:true"]
     environment:
       PUBLIC_ADMIN_URL: "https://{{ .ui_host }}"
-      PUBLIC_MCP_URL: "https://{{ .mcp_host }}/mcp"
+      PUBLIC_MCP_URL: "{{ if .mcp_host }}https://{{ .mcp_host }}/mcp{{ end }}"
       ADMIN_ADDR: ":8443"
-      MCP_ADDR: ":8444"
+      MCP_ADDR: "{{ if .mcp_host }}:8444{{ else }}off{{ end }}"
       TLS_DIR: /data/tls
-      TLS_HOSTS: "{{ .AppName }}-web,{{ .ui_host }},{{ .mcp_host }}"
+      TLS_HOSTS: "{{ .AppName }}-web,{{ .ui_host }}{{ if .mcp_host }},{{ .mcp_host }}{{ end }}"
       TBR_JWKS_FILE: /etc/tbr/tbr-assert.jwks
       TBR_APP_NAME: "{{ .AppName }}"
       TBR_HOST: "{{ .ui_host }}"
@@ -89,7 +89,7 @@ services:
   # Pasivní pomocník pro export, import a reset (s „docker compose up“ se nespouští):
   #   cd /opt/tyft/app/{{ .AppName }} && docker compose run --rm tools
   tools:
-    image: registry.tyfura.net/app/legal-cz:0.33
+    image: registry.tyfura.net/app/legal-cz:0.35
     profiles: [tools]
     entrypoint: ["/app", "tools"]
     # Root kvůli čtení a zápisu dat Qdrantu; vlastníky souborů nastaví zpět.
