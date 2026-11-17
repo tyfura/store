@@ -16,6 +16,7 @@
   "target": "https://{{ .AppName }}-web:8443",
   "assert": true,
   "auth": "required",
+  "session_ui": "own",
   "variables": {
     "ui_host": {
       "type": "string",
