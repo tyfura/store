@@ -1,0 +1,94 @@
+services:
+  unifi-db:
+    image: mongo:8.0
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: "{{ .db_root_password }}"
+    volumes:
+      - db_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      start_period: 30s
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - db
+
+  # Creates the UniFi database user, or updates its password and roles, on
+  # every start. The /docker-entrypoint-initdb.d scripts would run only on an
+  # empty data dir.
+  unifi-db-init:
+    image: mongo:8.0
+    restart: "no"
+    environment:
+      MONGO_ROOT_PASS: "{{ .db_root_password }}"
+      UNIFI_DB_USER: unifi
+      UNIFI_DB_PASS: "{{ .db_password }}"
+      UNIFI_DB_NAME: unifi
+    entrypoint:
+      - sh
+      - -c
+      - |
+        exec mongosh --quiet --host unifi-db -u root -p "$$MONGO_ROOT_PASS" --authenticationDatabase admin --eval '
+          const user = process.env.UNIFI_DB_USER;
+          const pwd = process.env.UNIFI_DB_PASS;
+          const name = process.env.UNIFI_DB_NAME;
+          const roles = [
+            { db: name, role: "dbOwner" },
+            { db: name + "_stat", role: "dbOwner" },
+            { db: name + "_audit", role: "dbOwner" }
+          ];
+          const admin = db.getSiblingDB("admin");
+          if (admin.getUser(user)) {
+            admin.updateUser(user, { pwd: pwd, roles: roles });
+            print("unifi db user updated");
+          } else {
+            admin.createUser({ user: user, pwd: pwd, roles: roles });
+            print("unifi db user created");
+          }
+        '
+    depends_on:
+      unifi-db:
+        condition: service_healthy
+    networks:
+      - db
+
+  unifi:
+    image: lscr.io/linuxserver/unifi-network-application:version-10.6.109
+    restart: unless-stopped
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "{{ .timezone }}"
+      MONGO_USER: unifi
+      MONGO_PASS: "{{ .db_password }}"
+      MONGO_HOST: unifi-db
+      MONGO_PORT: "27017"
+      MONGO_DBNAME: unifi
+      MONGO_AUTHSOURCE: admin
+    volumes:
+      - config:/config
+    ports:
+      - 8080:8080
+      - 3478:3478/udp
+      - 10001:10001/udp
+    depends_on:
+      unifi-db-init:
+        condition: service_completed_successfully
+    networks:
+      db:
+      tbr_ingress:
+        aliases:
+          - {{ .AppName }}-web
+
+volumes:
+  db_data:
+  config:
+
+networks:
+  db:
+    driver: bridge
+  tbr_ingress:
+    external: true

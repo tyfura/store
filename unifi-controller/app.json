@@ -1,0 +1,41 @@
+{
+    "id": "unifi-controller",
+    "name": "UniFi Network Application",
+    "short": "Controller for UniFi access points, switches and gateways.",
+    "description": "UniFi Network Application (linuxserver.io image) with a MongoDB database. Manages and adopts UniFi devices. Devices reach the controller on the host ports 8080/tcp (inform), 3478/udp (STUN) and 10001/udp (discovery); set the host IP as the inform host in Settings > System > Advanced when devices are not on the same L2 network.",
+    "category": "network",
+    "target": "https://{{ .AppName }}-web:8443",
+    "tags": [
+      "network",
+      "unifi",
+      "ubiquiti",
+      "wifi",
+      "controller"
+    ],
+    "version": "10.6.109",
+    "license": "https://www.ui.com/legal/termsofservice/",
+    "variables": {
+      "db_root_password": {
+        "type": "password",
+        "title": "Database root password",
+        "description": "Root password of the MongoDB database. Use letters and digits only.",
+        "required": true,
+        "secret": true
+      },
+      "db_password": {
+        "type": "password",
+        "title": "Database user password",
+        "description": "Password of the MongoDB user of the UniFi application. Use letters and digits only.",
+        "required": true,
+        "secret": true
+      },
+      "timezone": {
+        "type": "string",
+        "title": "Time zone",
+        "description": "Container time zone.",
+        "default": "Europe/Prague",
+        "required": true,
+        "placeholder": "Europe/Prague"
+      }
+    }
+  }
