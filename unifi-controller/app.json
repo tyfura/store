@@ -2,7 +2,7 @@
     "id": "unifi-controller",
     "name": "UniFi Network Application",
     "short": "Controller for UniFi access points, switches and gateways.",
-    "description": "UniFi Network Application (linuxserver.io image) with a MongoDB database. Manages and adopts UniFi devices. Devices reach the controller on the host ports 8080/tcp (inform), 3478/udp (STUN) and 10001/udp (discovery); set the host IP as the inform host in Settings > System > Advanced when devices are not on the same L2 network.",
+    "description": "UniFi Network Application (linuxserver.io image) with a MongoDB database. Manages and adopts UniFi devices. Devices reach the controller on the host ports 8080/tcp (inform), 3478/udp (STUN) and 10001/udp (discovery). The controller runs in a container network and doesn't know the host address: after the installation set Settings › System › Advanced › Inform Host › Override to the LAN IP of the TBR host (use a static IP). Layer 2 discovery doesn't reach the container, so let the devices find the controller by the DNS name \"unifi\" (add a record pointing to the TBR host IP in TBR DNS) or run `set-inform http://<host IP>:8080/inform` over SSH on the device.",
     "category": "network",
     "target": "https://{{ .AppName }}-web:8443",
     "tags": [
